@@ -16,6 +16,7 @@ whoop-notion-sync/
 │   ├── whoop.py
 │   ├── notion.py
 │   ├── health_json.py
+│   ├── github_whoop_secret.py
 │   └── main.py
 ├── scripts/
 │   └── get_token.py
@@ -44,6 +45,14 @@ Set these as GitHub Actions secrets and locally for manual runs:
 - `WHOOP_REFRESH_TOKEN`
 - `NOTION_TOKEN`
 - `NOTION_DATABASE_ID`
+
+### GitHub Actions only (WHOOP refresh rotation)
+
+WHOOP returns a **new** refresh token whenever you refresh an access token. The sync job updates the `WHOOP_REFRESH_TOKEN` repository secret automatically using the GitHub CLI, so cron runs keep working.
+
+Add one more secret:
+
+- `GH_REPO_PAT` — a [fine-grained personal access token](https://github.com/settings/tokens?type=beta) with access to this repo only. Under **Repository permissions**, set **Secrets** to **Read and write** (this covers `PUT .../actions/secrets/...`). The default `GITHUB_TOKEN` cannot change repository secrets. A **classic** PAT with the `repo` scope also works.
 
 ## Notion workout schema
 

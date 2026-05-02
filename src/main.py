@@ -1,3 +1,4 @@
+from github_whoop_secret import update_whoop_refresh_token_secret_if_configured
 from health_json import upsert_daily_health
 from notion import NotionWorkoutSync
 from whoop import WhoopClient
@@ -5,6 +6,7 @@ from whoop import WhoopClient
 
 def main() -> None:
     whoop = WhoopClient()
+    update_whoop_refresh_token_secret_if_configured(whoop.refresh_token)
     notion = NotionWorkoutSync()
     day = whoop.yesterday_iso()
 

@@ -10,9 +10,9 @@ WHOOP_TOKEN_URL = "https://api.prod.whoop.com/oauth/oauth2/token"
 
 class WhoopClient:
     def __init__(self) -> None:
-        self.client_id = os.environ["WHOOP_CLIENT_ID"]
-        self.client_secret = os.environ["WHOOP_CLIENT_SECRET"]
-        self.refresh_token = os.environ["WHOOP_REFRESH_TOKEN"]
+        self.client_id = os.environ["WHOOP_CLIENT_ID"].strip()
+        self.client_secret = os.environ["WHOOP_CLIENT_SECRET"].strip()
+        self.refresh_token = os.environ["WHOOP_REFRESH_TOKEN"].strip()
         self.access_token = self._refresh_access_token()
 
     def _refresh_access_token(self) -> str:
@@ -23,6 +23,7 @@ class WhoopClient:
                 "refresh_token": self.refresh_token,
                 "client_id": self.client_id,
                 "client_secret": self.client_secret,
+                "scope": "offline",
             },
             timeout=30,
         )
@@ -31,6 +32,9 @@ class WhoopClient:
         token = payload.get("access_token")
         if not token:
             raise RuntimeError("Whoop OAuth response did not include access_token")
+        new_refresh = payload.get("refresh_token")
+        if new_refresh:
+            self.refresh_token = str(new_refresh).strip()
         return token
 
     def _get(self, endpoint: str, day: str) -> Any:
