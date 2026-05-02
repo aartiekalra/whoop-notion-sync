@@ -34,7 +34,7 @@ whoop-notion-sync/
 - `GET /activity/workout` -> upsert workout rows in Notion
 - `GET /recovery`, `GET /activity/sleep`, `GET /cycle` -> upsert one daily record in `data/data.json`
 
-The workflow runs daily at 7:00 UTC and can also be triggered manually.
+The workflow runs every hour (UTC) and can also be triggered manually. GitHub may delay scheduled runs slightly under load.
 
 Sync targets **yesterday in your local calendar** (default timezone `America/New_York`). WHOOP API windows use that full local day converted to UTC.
 
@@ -101,7 +101,7 @@ This starts a local callback server at `http://localhost:8000/callback`, opens W
 
 Workflow file: `.github/workflows/sync.yml`
 
-- schedule: `0 7 * * *`
+- schedule: `0 * * * *`
 - permissions: `contents: write` (required for committing `data/data.json`)
 
 After each run, workflow commits updated `data/data.json` only when it changed.

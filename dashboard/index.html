@@ -7,17 +7,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
     <style>
       :root {
-        color-scheme: dark;
-        --bg: #0b1220;
-        --panel: #111827;
-        --panel2: #0f172a;
-        --text: #e5e7eb;
-        --muted: #94a3b8;
-        --border: rgba(148, 163, 184, 0.22);
-        --rec-high: #22c55e;
-        --rec-mid: #eab308;
-        --rec-low: #ef4444;
-        --rec-none: #475569;
+        color-scheme: light;
+        /* Notion-like light (matches embedded page / default UI) */
+        --bg: #f7f6f3;
+        --surface: #ffffff;
+        --text: #37352f;
+        --muted: rgba(55, 53, 47, 0.65);
+        --border: rgba(55, 53, 47, 0.09);
+        --shadow: rgba(15, 15, 15, 0.05) 0px 1px 0px;
+        --chart-tick: rgba(55, 53, 47, 0.5);
+        --chart-grid: rgba(55, 53, 47, 0.07);
+        --rec-high: #34d399;
+        --rec-mid: #fbbf24;
+        --rec-low: #fb7185;
+        --rec-none: #cbd5e1;
+        --tile-high-bg: #ecfdf5;
+        --tile-high-text: #065f46;
+        --tile-high-border: rgba(52, 211, 153, 0.55);
+        --tile-mid-bg: #fffbeb;
+        --tile-mid-text: #92400e;
+        --tile-mid-border: rgba(251, 191, 36, 0.55);
+        --tile-low-bg: #fff1f2;
+        --tile-low-text: #9f1239;
+        --tile-low-border: rgba(251, 113, 133, 0.55);
+        --tile-none-bg: rgba(55, 53, 47, 0.06);
+        --tile-none-text: rgba(55, 53, 47, 0.5);
+        --tile-none-border: rgba(55, 53, 47, 0.09);
+        --sleep-high-bg: #f0fdfa;
+        --sleep-high-text: #0f766e;
+        --sleep-high-border: rgba(13, 148, 136, 0.45);
+        --sleep-mid-bg: #fffbeb;
+        --sleep-mid-text: #b45309;
+        --sleep-mid-border: rgba(251, 191, 36, 0.45);
+        --sleep-low-bg: #fff1f2;
+        --sleep-low-text: #be123c;
+        --sleep-low-border: rgba(251, 113, 133, 0.45);
+        --sleep-none-bg: rgba(55, 53, 47, 0.06);
+        --sleep-none-text: rgba(55, 53, 47, 0.5);
+        --sleep-none-border: rgba(55, 53, 47, 0.09);
+        /* sleep hours line chart — teal / amber / rose (distinct from recovery greens) */
+        --sleep-chart-high: #0d9488;
+        --sleep-chart-mid: #f59e0b;
+        --sleep-chart-low: #e11d48;
+        --sleep-chart-none: #9b9a97;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --bg: #191919;
+          --surface: #202020;
+          --text: rgba(255, 255, 255, 0.81);
+          --muted: rgba(255, 255, 255, 0.43);
+          --border: rgba(255, 255, 255, 0.09);
+          --shadow: rgba(0, 0, 0, 0.4) 0px 1px 0px;
+          --chart-tick: rgba(255, 255, 255, 0.45);
+          --chart-grid: rgba(255, 255, 255, 0.07);
+          --tile-none-bg: rgba(255, 255, 255, 0.06);
+          --tile-none-text: rgba(255, 255, 255, 0.45);
+          --tile-none-border: rgba(255, 255, 255, 0.09);
+          --sleep-none-bg: rgba(255, 255, 255, 0.06);
+          --sleep-none-text: rgba(255, 255, 255, 0.45);
+          --sleep-none-border: rgba(255, 255, 255, 0.09);
+          --sleep-chart-none: rgba(255, 255, 255, 0.35);
+        }
       }
 
       * {
@@ -26,43 +79,50 @@
 
       body {
         margin: 0;
-        background: radial-gradient(1200px 600px at 20% -10%, rgba(96, 165, 250, 0.12), transparent),
-          radial-gradient(900px 500px at 90% 0%, rgba(52, 211, 153, 0.08), transparent), var(--bg);
+        background: var(--bg);
         color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji",
+          Arial, sans-serif;
       }
 
       .container {
         max-width: 1080px;
         margin: 0 auto;
-        padding: 22px 18px 40px;
+        padding: 26px 18px 44px;
       }
 
       h1 {
         margin: 0 0 6px;
-        font-size: 1.45rem;
-        letter-spacing: -0.02em;
-      }
-
-      .sub {
-        margin: 0 0 18px;
-        color: var(--muted);
-        font-size: 0.92rem;
+        font-size: 1.55rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: var(--text);
       }
 
       .section-title {
         margin: 22px 0 10px;
-        font-size: 0.78rem;
-        letter-spacing: 0.08em;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--muted);
       }
 
       .week-panel {
-        background: linear-gradient(180deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.92));
+        background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 14px;
+        border-radius: 6px;
+        padding: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .week-avg-heading {
+        margin: 0 0 10px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        text-transform: lowercase;
       }
 
       .week-metrics {
@@ -70,69 +130,141 @@
         flex-wrap: wrap;
         gap: 10px;
         align-items: stretch;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
       }
 
       .metric {
-        flex: 1 1 120px;
-        background: rgba(2, 6, 23, 0.35);
+        flex: 1 1 100px;
+        background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 10px 12px;
+        border-radius: 6px;
+        padding: 12px 14px;
         min-width: 0;
+        text-align: center;
       }
 
       .metric .label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
         color: var(--muted);
-        font-size: 0.78rem;
+        text-transform: lowercase;
+        margin-bottom: 6px;
       }
 
       .metric .value {
-        margin-top: 6px;
-        font-size: 1.25rem;
-        font-weight: 750;
-        letter-spacing: -0.02em;
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text);
       }
 
       .week-strip {
         display: grid;
         grid-template-columns: repeat(7, minmax(0, 1fr));
-        gap: 8px;
+        gap: 10px;
       }
 
       .day-cell {
-        border-radius: 12px;
-        padding: 10px 8px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 6px;
+        padding: 12px 8px;
         text-align: center;
         min-width: 0;
+        border: 1px solid var(--tile-none-border);
+        background: var(--surface);
+        color: var(--text);
       }
 
       .day-cell .dow {
-        font-size: 0.72rem;
-        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.68rem;
+        font-weight: 800;
         letter-spacing: 0.06em;
-        text-transform: uppercase;
+        text-transform: lowercase;
+        opacity: 0.85;
+        color: var(--muted);
       }
 
       .day-cell .md {
         margin-top: 4px;
         font-size: 0.78rem;
-        color: rgba(255, 255, 255, 0.72);
+        font-weight: 700;
+        opacity: 0.88;
+        color: var(--muted);
       }
 
-      .day-cell .score {
+      .day-cell-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        align-items: center;
         margin-top: 10px;
-        font-size: 1.35rem;
+      }
+
+      .chip {
+        display: inline-block;
+        font-size: 0.7rem;
         font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: 1;
+        letter-spacing: -0.02em;
+        padding: 5px 9px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        line-height: 1.2;
+      }
+
+      .chip-rec--high {
+        background: var(--tile-high-bg);
+        color: var(--tile-high-text);
+        border-color: var(--tile-high-border);
+      }
+
+      .chip-rec--mid {
+        background: var(--tile-mid-bg);
+        color: var(--tile-mid-text);
+        border-color: var(--tile-mid-border);
+      }
+
+      .chip-rec--low {
+        background: var(--tile-low-bg);
+        color: var(--tile-low-text);
+        border-color: var(--tile-low-border);
+      }
+
+      .chip-rec--none {
+        background: var(--tile-none-bg);
+        color: var(--tile-none-text);
+        border-color: var(--tile-none-border);
+      }
+
+      .chip-sleep--high {
+        background: var(--sleep-high-bg);
+        color: var(--sleep-high-text);
+        border-color: var(--sleep-high-border);
+      }
+
+      .chip-sleep--mid {
+        background: var(--sleep-mid-bg);
+        color: var(--sleep-mid-text);
+        border-color: var(--sleep-mid-border);
+      }
+
+      .chip-sleep--low {
+        background: var(--sleep-low-bg);
+        color: var(--sleep-low-text);
+        border-color: var(--sleep-low-border);
+      }
+
+      .chip-sleep--none {
+        background: var(--sleep-none-bg);
+        color: var(--sleep-none-text);
+        border-color: var(--sleep-none-border);
       }
 
       .day-cell .submetric {
         margin-top: 8px;
         font-size: 0.72rem;
-        color: rgba(255, 255, 255, 0.78);
+        font-weight: 600;
+        color: var(--muted);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -141,20 +273,23 @@
       .chart-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 14px;
       }
 
       .chart-wrap {
-        background: var(--panel);
+        background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 14px;
+        border-radius: 6px;
+        padding: 16px;
+        box-shadow: var(--shadow);
       }
 
       .chart-title {
-        margin: 0 0 8px;
-        font-size: 0.95rem;
-        color: var(--muted);
+        margin: 0 0 10px;
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--text);
+        text-transform: lowercase;
       }
 
       canvas {
@@ -176,27 +311,26 @@
   </head>
   <body>
     <div class="container">
-      <h1>Whoop dashboard</h1>
-      <p class="sub">This week at a glance · scroll for monthly trends</p>
+      <h1>whoop dashboard</h1>
 
       <div class="section-title">This week</div>
       <div class="week-panel">
-        <div id="week-metrics" class="week-metrics"></div>
+        <div id="week-avg-wrap"></div>
         <div id="week-strip" class="week-strip"></div>
       </div>
 
       <div class="section-title">Monthly trends</div>
       <div class="chart-grid">
         <div class="chart-wrap">
-          <p class="chart-title">Recovery (30 days)</p>
+          <p class="chart-title">recovery · last 30 days</p>
           <canvas id="recoveryChart"></canvas>
         </div>
         <div class="chart-wrap">
-          <p class="chart-title">Sleep hours (30 days)</p>
+          <p class="chart-title">sleep · last 30 days</p>
           <canvas id="sleepChart"></canvas>
         </div>
         <div class="chart-wrap">
-          <p class="chart-title">Strain (30 days)</p>
+          <p class="chart-title">strain · last 30 days</p>
           <canvas id="strainChart"></canvas>
         </div>
       </div>
@@ -204,6 +338,14 @@
 
     <script>
       const DATA_URL = "../data/data.json";
+
+      function chartScaleColors() {
+        const s = getComputedStyle(document.documentElement);
+        return {
+          tick: s.getPropertyValue("--chart-tick").trim(),
+          grid: s.getPropertyValue("--chart-grid").trim(),
+        };
+      }
 
       function recoveryBucket(score) {
         const n = Number(score);
@@ -223,18 +365,46 @@
 
       function recoveryHex(score) {
         const b = recoveryBucket(score);
-        if (b === "high") return "#22c55e";
-        if (b === "mid") return "#eab308";
-        if (b === "low") return "#ef4444";
-        return "#64748b";
+        if (b === "high") return "#34d399";
+        if (b === "mid") return "#fbbf24";
+        if (b === "low") return "#fb7185";
+        return "#cbd5e1";
       }
 
-      function recoveryTextColor(score) {
-        const n = Number(score);
-        if (!Number.isFinite(n) || n <= 0) return "#cbd5e1";
-        if (n >= 75) return "#052e16";
-        if (n >= 45) return "#422006";
-        return "#450a0a";
+      function sleepBucket(hrs) {
+        const n = Number(hrs);
+        if (!Number.isFinite(n) || n <= 0) return "none";
+        if (n >= 8) return "high";
+        if (n >= 6) return "mid";
+        return "low";
+      }
+
+      function sleepCssVar(hrs) {
+        const b = sleepBucket(hrs);
+        if (b === "high") return "var(--sleep-high-text)";
+        if (b === "mid") return "var(--sleep-mid-text)";
+        if (b === "low") return "var(--sleep-low-text)";
+        return "var(--sleep-none-text)";
+      }
+
+      function sleepHex(hrs) {
+        const b = sleepBucket(hrs);
+        if (b === "high") return "#0d9488";
+        if (b === "mid") return "#f59e0b";
+        if (b === "low") return "#e11d48";
+        return "#9b9a97";
+      }
+
+      function weekdayUtc(isoDateStr) {
+        const [y, m, d] = isoDateStr.split("-").map(Number);
+        const dt = new Date(Date.UTC(y, m - 1, d));
+        return dt.getUTCDay();
+      }
+
+      function mondayStartIso(isoDateStr) {
+        const dow = weekdayUtc(isoDateStr);
+        const daysFromMonday = dow === 0 ? 6 : dow - 1;
+        return addDaysIso(isoDateStr, -daysFromMonday);
       }
 
       function average(rows, key) {
@@ -257,52 +427,69 @@
         return `${yy}-${mm}-${dd}`;
       }
 
-      function renderWeekMetrics(last7) {
-        const root = document.getElementById("week-metrics");
-        const avgRec = average(last7, "recovery_score");
+      function renderWeekAvg(weekRows) {
+        const root = document.getElementById("week-avg-wrap");
+        const avgRec = average(weekRows, "recovery_score");
+        const avgSleep = average(weekRows, "sleep_duration_hrs");
+        const avgStrain = average(weekRows, "daily_strain");
         const cards = [
-          { label: "Avg recovery", value: `${fmt(avgRec, 0)}%`, color: recoveryCssVar(avgRec) },
-          { label: "Avg HRV", value: fmt(average(last7, "hrv"), 1) },
-          { label: "Avg sleep", value: `${fmt(average(last7, "sleep_duration_hrs"), 1)}h` },
-          { label: "Avg strain", value: fmt(average(last7, "daily_strain"), 1) },
+          { label: "recovery", value: `${fmt(avgRec, 0)}%`, color: recoveryCssVar(avgRec) },
+          { label: "sleep", value: `${fmt(avgSleep, 1)}h`, color: sleepCssVar(avgSleep) },
+          { label: "strain", value: fmt(avgStrain, 1), color: "" },
         ];
-        root.innerHTML = cards
-          .map((c) => {
-            const valStyle = "color" in c ? `color:${c.color}` : "";
-            return `<div class="metric"><div class="label">${c.label}</div><div class="value" style="${valStyle}">${c.value}</div></div>`;
-          })
-          .join("");
+        root.innerHTML = `
+          <div class="week-avg-heading">average</div>
+          <div class="week-metrics">
+            ${cards
+              .map((c) => {
+                const valStyle = c.color ? `color:${c.color}` : "";
+                return `<div class="metric"><div class="label">${c.label}</div><div class="value" style="${valStyle}">${c.value}</div></div>`;
+              })
+              .join("")}
+          </div>`;
       }
 
-      function renderWeekStrip(last7Dates, rowsByDate) {
-        const dowShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      function renderWeekStrip(weekDates, rowsByDate) {
+        const dowShort = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
         const root = document.getElementById("week-strip");
-        root.innerHTML = last7Dates
+        root.innerHTML = weekDates
           .map((dateStr) => {
             const row = rowsByDate.get(dateStr) || {};
             const score = Number(row.recovery_score);
             const hasScore = Number.isFinite(score) && score > 0;
-            const bg = hasScore ? recoveryCssVar(score) : "rgba(71, 85, 105, 0.35)";
+            const recBucket = hasScore ? recoveryBucket(score) : "none";
+            const recCls = `chip-rec--${recBucket}`;
             const scoreText = hasScore ? `${Math.round(score)}%` : "—";
-            const textCol = hasScore ? recoveryTextColor(score) : "#cbd5e1";
-            const dt = new Date(`${dateStr}T12:00:00`);
-            const dow = dowShort[dt.getDay()];
-            const md = `${dt.getMonth() + 1}/${dt.getDate()}`;
-            const sleep = row.sleep_duration_hrs != null ? `${fmt(row.sleep_duration_hrs, 1)}h sleep` : "";
-            const strain = row.daily_strain != null ? `${fmt(row.daily_strain, 1)} strain` : "";
-            const sub = [sleep, strain].filter(Boolean).join(" · ");
+
+            const sleepHrs = Number(row.sleep_duration_hrs);
+            const hasSleep = Number.isFinite(sleepHrs) && sleepHrs > 0;
+            const sleepB = hasSleep ? sleepBucket(sleepHrs) : "none";
+            const sleepCls = `chip-sleep--${sleepB}`;
+            const sleepText = hasSleep ? `${fmt(sleepHrs, 1)}h` : "—";
+
+            const dow = dowShort[weekdayUtc(dateStr)];
+            const [, mm, dd] = dateStr.split("-");
+            const mdLabel = `${Number(mm)}/${Number(dd)}`;
+
+            const strain =
+              row.daily_strain != null ? `${fmt(row.daily_strain, 1)} strain` : "";
+            const sub = strain || "no data";
+
             return `
-              <div class="day-cell" style="background:${bg}; color:${hasScore ? textCol : "#e5e7eb"};">
+              <div class="day-cell">
                 <div class="dow">${dow}</div>
-                <div class="md">${md}</div>
-                <div class="score">${scoreText}</div>
-                <div class="submetric" title="${sub}">${sub || "No data"}</div>
+                <div class="md">${mdLabel}</div>
+                <div class="day-cell-chips">
+                  <span class="chip ${recCls}">${scoreText}</span>
+                  <span class="chip ${sleepCls}">${sleepText}</span>
+                </div>
+                <div class="submetric" title="${strain}">${sub}</div>
               </div>`;
           })
           .join("");
       }
 
-      function makeChart(canvasId, labels, values, datasetStyle = {}, options = {}) {
+      function makeChart(canvasId, labels, values, datasetStyle = {}, options = {}, sc = chartScaleColors()) {
         const canvas = document.getElementById(canvasId);
         const baseDataset = {
           data: values,
@@ -318,12 +505,12 @@
           },
           scales: {
             x: {
-              ticks: { color: "#9ca3af", maxRotation: 0 },
-              grid: { color: "rgba(148,163,184,0.12)" },
+              ticks: { color: sc.tick, maxRotation: 0 },
+              grid: { color: sc.grid },
             },
             y: {
-              ticks: { color: "#9ca3af" },
-              grid: { color: "rgba(148,163,184,0.12)" },
+              ticks: { color: sc.tick },
+              grid: { color: sc.grid },
             },
           },
           ...options,
@@ -350,11 +537,14 @@
 
         const rowsByDate = new Map(rows.map((r) => [String(r.date), r]));
         const lastDate = rows.length ? String(rows[rows.length - 1].date) : new Date().toISOString().slice(0, 10);
-        const last7Dates = Array.from({ length: 7 }, (_, i) => addDaysIso(lastDate, -6 + i));
-        const last7Rows = last7Dates.map((d) => rowsByDate.get(d)).filter(Boolean);
+        const monday = mondayStartIso(lastDate);
+        const weekDates = Array.from({ length: 7 }, (_, i) => addDaysIso(monday, i));
+        const weekRows = weekDates.map((d) => rowsByDate.get(d)).filter(Boolean);
 
-        renderWeekMetrics(last7Rows.length ? last7Rows : rows.slice(-7));
-        renderWeekStrip(last7Dates, rowsByDate);
+        renderWeekAvg(weekRows.length ? weekRows : rows.slice(-7));
+        renderWeekStrip(weekDates, rowsByDate);
+
+        const cs = chartScaleColors();
 
         const last30 = rows.slice(-30);
         const labels = last30.map((r) => r.date);
@@ -374,8 +564,8 @@
                 },
                 borderWidth: 2,
                 pointBackgroundColor: recoveryVals.map((v) => recoveryHex(v)),
-                pointBorderColor: "rgba(15,23,42,0.9)",
-                pointRadius: 3,
+                pointBorderColor: "#ffffff",
+                pointRadius: 4,
                 tension: 0.25,
               },
             ],
@@ -385,39 +575,68 @@
             plugins: { legend: { display: false } },
             scales: {
               x: {
-                ticks: { color: "#9ca3af", maxRotation: 0 },
-                grid: { color: "rgba(148,163,184,0.12)" },
+                ticks: { color: cs.tick, maxRotation: 0 },
+                grid: { color: cs.grid },
               },
               y: {
                 suggestedMin: 0,
                 suggestedMax: 100,
-                ticks: { color: "#9ca3af" },
-                grid: { color: "rgba(148,163,184,0.12)" },
+                ticks: { color: cs.tick },
+                grid: { color: cs.grid },
+              },
+            },
+          },
+        });
+
+        const sleepVals = last30.map((r) => Number(r.sleep_duration_hrs) || 0);
+        const sleepCanvas = document.getElementById("sleepChart");
+        if (sleepCanvas.__chart) sleepCanvas.__chart.destroy();
+        sleepCanvas.__chart = new Chart(sleepCanvas, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                data: sleepVals,
+                segment: {
+                  borderColor: (ctx) => sleepHex(ctx.p1.parsed.y ?? 0),
+                },
+                borderWidth: 2,
+                pointBackgroundColor: sleepVals.map((v) => sleepHex(v)),
+                pointBorderColor: "#ffffff",
+                pointRadius: 4,
+                tension: 0.25,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                ticks: { color: cs.tick, maxRotation: 0 },
+                grid: { color: cs.grid },
+              },
+              y: {
+                suggestedMin: 0,
+                ticks: { color: cs.tick },
+                grid: { color: cs.grid },
               },
             },
           },
         });
 
         makeChart(
-          "sleepChart",
-          labels,
-          last30.map((r) => Number(r.sleep_duration_hrs) || 0),
-          {
-            borderColor: "#34d399",
-            backgroundColor: "#34d399",
-            pointBackgroundColor: "#34d399",
-          }
-        );
-
-        makeChart(
           "strainChart",
           labels,
           last30.map((r) => Number(r.daily_strain) || 0),
           {
-            borderColor: "#f59e0b",
-            backgroundColor: "#f59e0b",
-            pointBackgroundColor: "#f59e0b",
-          }
+            borderColor: "#fb923c",
+            backgroundColor: "#fb923c",
+            pointBackgroundColor: "#fb923c",
+          },
+          {},
+          cs
         );
       }
 
@@ -425,7 +644,7 @@
         console.error(err);
         document.querySelector(".container").insertAdjacentHTML(
           "beforeend",
-          '<p style="color:#fca5a5;margin-top:14px">Failed to load dashboard data.</p>'
+          '<p style="color:#e11d48;margin-top:14px;font-weight:700">failed to load dashboard data.</p>'
         );
       });
     </script>
