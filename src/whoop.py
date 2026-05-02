@@ -70,17 +70,46 @@ class WhoopClient:
         sleep_item = self._first_item(sleep)
         cycle_item = self._first_item(cycle)
 
-        sleep_ms = self._pick(sleep_item, ["total_in_bed_time_milli", "sleep_duration_ms", "duration_milli"], 0)
+        sleep_ms = self._pick_nested(
+            sleep_item,
+            [
+                ("score", "stage_summary", "total_in_bed_time_milli"),
+                ("total_in_bed_time_milli",),
+                ("sleep_duration_ms",),
+                ("duration_milli",),
+            ],
+            0,
+        )
         sleep_hrs = round((sleep_ms or 0) / 3_600_000, 2)
 
         return {
             "date": day,
-            "recovery_score": self._pick(recovery_item, ["recovery_score"], 0),
-            "hrv": self._pick(recovery_item, ["hrv_rmssd_milli", "hrv"], 0.0),
-            "resting_hr": self._pick(recovery_item, ["resting_heart_rate", "resting_hr"], 0),
+            "recovery_score": self._pick_nested(
+                recovery_item,
+                [("score", "recovery_score"), ("recovery_score",)],
+                0,
+            ),
+            "hrv": self._pick_nested(
+                recovery_item,
+                [("score", "hrv_rmssd_milli"), ("hrv_rmssd_milli",), ("hrv",)],
+                0.0,
+            ),
+            "resting_hr": self._pick_nested(
+                recovery_item,
+                [("score", "resting_heart_rate"), ("resting_heart_rate",), ("resting_hr",)],
+                0,
+            ),
             "sleep_duration_hrs": sleep_hrs,
-            "sleep_performance": self._pick(sleep_item, ["sleep_performance_percentage", "sleep_performance"], 0),
-            "daily_strain": self._pick(cycle_item, ["strain", "strain_score", "day_strain"], 0.0),
+            "sleep_performance": self._pick_nested(
+                sleep_item,
+                [("score", "sleep_performance_percentage"), ("sleep_performance_percentage",), ("sleep_performance",)],
+                0,
+            ),
+            "daily_strain": self._pick_nested(
+                cycle_item,
+                [("score", "strain"), ("strain",), ("strain_score",), ("day_strain",)],
+                0.0,
+            ),
         }
 
     def fetch_workouts(self, day: str) -> List[Dict[str, Any]]:
@@ -92,7 +121,11 @@ class WhoopClient:
                 {
                     "date": day,
                     "sport": self._pick(row, ["sport_name", "sport", "sport_id"], "Unknown"),
-                    "strain": self._pick(row, ["score", "strain", "strain_score"], 0.0),
+                    "strain": self._pick_nested(
+                        row,
+                        [("score", "strain"), ("strain",), ("strain_score",), ("score",)],
+                        0.0,
+                    ),
                     "start_time": self._pick(row, ["start", "start_time", "start_datetime"], ""),
                     "end_time": self._pick(row, ["end", "end_time", "end_datetime"], ""),
                 }
@@ -121,4 +154,18 @@ class WhoopClient:
         for key in keys:
             if key in data and data[key] is not None:
                 return data[key]
+        return default
+
+    @staticmethod
+    def _pick_nested(data: Dict[str, Any], paths: List[Tuple[str, ...]], default: Any) -> Any:
+        for path in paths:
+            value: Any = data
+            found = True
+            for key in path:
+                if not isinstance(value, dict) or key not in value or value[key] is None:
+                    found = False
+                    break
+                value = value[key]
+            if found:
+                return value
         return default
