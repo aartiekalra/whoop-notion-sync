@@ -1,6 +1,7 @@
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Tuple
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -13,6 +14,8 @@ class WhoopClient:
         self.client_id = os.environ["WHOOP_CLIENT_ID"].strip()
         self.client_secret = os.environ["WHOOP_CLIENT_SECRET"].strip()
         self.refresh_token = os.environ["WHOOP_REFRESH_TOKEN"].strip()
+        tz_name = os.environ.get("WHOOP_SYNC_TZ", "America/New_York").strip()
+        self.sync_tz = ZoneInfo(tz_name)
         self.access_token = self._refresh_access_token()
 
     def _refresh_access_token(self) -> str:
@@ -46,8 +49,12 @@ class WhoopClient:
         return token
 
     def _get(self, endpoint: str, day: str) -> Any:
-        start = f"{day}T00:00:00.000Z"
-        end = f"{day}T23:59:59.999Z"
+        local_midnight = datetime.combine(date.fromisoformat(day), datetime.min.time(), tzinfo=self.sync_tz)
+        next_midnight = local_midnight + timedelta(days=1)
+        utc = ZoneInfo("UTC")
+        start = local_midnight.astimezone(utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+        end_exclusive = next_midnight.astimezone(utc)
+        end = (end_exclusive - timedelta(milliseconds=1)).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
         response = requests.get(
             f"{WHOOP_API_BASE}{endpoint}",
             headers={"Authorization": f"Bearer {self.access_token}"},
@@ -57,9 +64,9 @@ class WhoopClient:
         response.raise_for_status()
         return response.json()
 
-    @staticmethod
-    def yesterday_iso() -> str:
-        return (date.today() - timedelta(days=1)).isoformat()
+    def yesterday_iso(self) -> str:
+        today_local = datetime.now(self.sync_tz).date()
+        return (today_local - timedelta(days=1)).isoformat()
 
     def fetch_health_metrics(self, day: str) -> Dict[str, Any]:
         recovery = self._get("/recovery", day)

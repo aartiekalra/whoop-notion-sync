@@ -28,6 +28,7 @@ jobs:
       - name: Run sync
         run: python src/main.py
         env:
+          WHOOP_SYNC_TZ: America/New_York
           WHOOP_CLIENT_ID: ${{ secrets.WHOOP_CLIENT_ID }}
           WHOOP_CLIENT_SECRET: ${{ secrets.WHOOP_CLIENT_SECRET }}
           WHOOP_REFRESH_TOKEN: ${{ secrets.WHOOP_REFRESH_TOKEN }}

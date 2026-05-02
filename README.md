@@ -36,6 +36,8 @@ whoop-notion-sync/
 
 The workflow runs daily at 7:00 UTC and can also be triggered manually.
 
+Sync targets **yesterday in your local calendar** (default timezone `America/New_York`). WHOOP API windows use that full local day converted to UTC.
+
 ## Environment variables
 
 Set these as GitHub Actions secrets and locally for manual runs:
@@ -43,6 +45,7 @@ Set these as GitHub Actions secrets and locally for manual runs:
 - `WHOOP_CLIENT_ID`
 - `WHOOP_CLIENT_SECRET`
 - `WHOOP_REFRESH_TOKEN`
+- `WHOOP_SYNC_TZ` (optional, default `America/New_York`) — IANA timezone for which calendar day counts as “today” / “yesterday”
 - `NOTION_TOKEN`
 - `NOTION_DATABASE_ID`
 
