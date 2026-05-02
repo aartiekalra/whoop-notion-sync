@@ -1,11 +1,11 @@
 [
   {
     "date": "2026-05-01",
-    "recovery_score": 0,
-    "hrv": 0.0,
-    "resting_hr": 0,
-    "sleep_duration_hrs": 0.0,
-    "sleep_performance": 0,
-    "daily_strain": 0.0
+    "recovery_score": 44.0,
+    "hrv": 52.313065,
+    "resting_hr": 71.0,
+    "sleep_duration_hrs": 7.54,
+    "sleep_performance": 89.0,
+    "daily_strain": 8.274605
   }
 ]
