@@ -16,18 +16,26 @@ class WhoopClient:
         self.access_token = self._refresh_access_token()
 
     def _refresh_access_token(self) -> str:
-        response = requests.post(
-            WHOOP_TOKEN_URL,
-            data={
-                "grant_type": "refresh_token",
-                "refresh_token": self.refresh_token,
-                "client_id": self.client_id,
-                "client_secret": self.client_secret,
-                "scope": "offline",
-            },
-            timeout=30,
-        )
-        response.raise_for_status()
+        payload = {
+            "grant_type": "refresh_token",
+            "refresh_token": self.refresh_token,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "scope": "offline",
+        }
+        response = requests.post(WHOOP_TOKEN_URL, data=payload, timeout=30)
+
+        # Some WHOOP app configs reject scope on refresh; retry once without it.
+        if response.status_code >= 400:
+            retry_payload = {k: v for k, v in payload.items() if k != "scope"}
+            retry = requests.post(WHOOP_TOKEN_URL, data=retry_payload, timeout=30)
+            if retry.ok:
+                response = retry
+
+        if response.status_code >= 400:
+            detail = response.text.strip()
+            raise RuntimeError(f"Whoop token refresh failed ({response.status_code}): {detail}")
+
         payload = response.json()
         token = payload.get("access_token")
         if not token:
