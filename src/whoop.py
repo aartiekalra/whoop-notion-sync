@@ -46,10 +46,12 @@ class WhoopClient:
         return token
 
     def _get(self, endpoint: str, day: str) -> Any:
+        start = f"{day}T00:00:00.000Z"
+        end = f"{day}T23:59:59.999Z"
         response = requests.get(
             f"{WHOOP_API_BASE}{endpoint}",
             headers={"Authorization": f"Bearer {self.access_token}"},
-            params={"start": day, "end": day},
+            params={"start": start, "end": end},
             timeout=30,
         )
         response.raise_for_status()
