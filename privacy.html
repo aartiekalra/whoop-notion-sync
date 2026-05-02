@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy - Whoop Notion Sync</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.6;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+        color: #111827;
+      }
+      h1, h2 {
+        line-height: 1.25;
+      }
+      .muted {
+        color: #6b7280;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Privacy Policy</h1>
+    <p class="muted">Last updated: May 2, 2026</p>
+
+    <p>
+      This Privacy Policy describes how the <strong>Whoop Notion Sync</strong> app
+      ("the App") accesses and uses your WHOOP data to synchronize selected health
+      and workout metrics to your Notion workspace and a personal dashboard.
+    </p>
+
+    <h2>Data Collected</h2>
+    <p>The App reads the following data from WHOOP APIs:</p>
+    <ul>
+      <li>Recovery data (for example recovery score, HRV, resting heart rate)</li>
+      <li>Sleep data (for example sleep duration, sleep performance)</li>
+      <li>Cycle data (daily strain)</li>
+      <li>Workout data (for example sport type, strain, start/end times)</li>
+    </ul>
+
+    <h2>How Data Is Used</h2>
+    <ul>
+      <li>Workout records are synced to a user-owned Notion database.</li>
+      <li>
+        Daily health metrics are written to a user-owned JSON file at
+        <code>data/data.json</code> in this repository.
+      </li>
+      <li>
+        The JSON file is used to render a GitHub Pages dashboard for personal viewing.
+      </li>
+    </ul>
+
+    <h2>Data Storage and Sharing</h2>
+    <ul>
+      <li>
+        Data is stored only in services controlled by the user (GitHub repository and
+        user-authorized Notion workspace).
+      </li>
+      <li>
+        The App does not sell personal data and does not share data with third parties
+        beyond GitHub, Notion, and WHOOP as required for functionality.
+      </li>
+    </ul>
+
+    <h2>Authentication and Tokens</h2>
+    <p>
+      The App uses WHOOP OAuth 2.0. Refresh tokens and API credentials are stored as
+      GitHub Actions secrets (or local environment variables during setup) and are not
+      intentionally exposed in public files.
+    </p>
+
+    <h2>Data Retention and Deletion</h2>
+    <p>
+      Data remains in your Notion database and repository until you delete it. You may
+      stop synchronization at any time by removing app credentials/secrets or revoking
+      WHOOP app access.
+    </p>
+
+    <h2>Your Choices</h2>
+    <ul>
+      <li>You can revoke WHOOP app authorization through your WHOOP account settings.</li>
+      <li>You can remove synced data from Notion and GitHub at any time.</li>
+      <li>You can disable the GitHub Actions workflow to stop future syncs.</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>
+      For questions or deletion requests, contact:
+      <strong>your-email@example.com</strong>
+    </p>
+    <p class="muted">
+      Replace the contact email above with your real support/contact email before using
+      this page for production.
+    </p>
+  </body>
+</html>
