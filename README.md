@@ -1,6 +1,6 @@
 # Whoop -> Notion + Dashboard Sync
 
-Daily Python pipeline that syncs yesterday's Whoop data into:
+Hourly Python pipeline that syncs yesterday's Whoop data into:
 
 - Notion workouts database (one row per workout)
 - `data/data.json` append-only health history (for dashboard)
