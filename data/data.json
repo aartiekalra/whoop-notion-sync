@@ -115,5 +115,14 @@
     "sleep_duration_hrs": 8.34,
     "sleep_performance": 80.0,
     "daily_strain": 7.5978723
+  },
+  {
+    "date": "2026-05-14",
+    "recovery_score": 48.0,
+    "hrv": 60.68434,
+    "resting_hr": 72.0,
+    "sleep_duration_hrs": 2.62,
+    "sleep_performance": 28.0,
+    "daily_strain": 10.496504
   }
 ]
