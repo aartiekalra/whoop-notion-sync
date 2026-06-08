@@ -334,11 +334,11 @@
   },
   {
     "date": "2026-06-07",
-    "recovery_score": 0,
-    "hrv": 0.0,
-    "resting_hr": 0,
-    "sleep_duration_hrs": 0.0,
-    "sleep_performance": 0,
-    "daily_strain": 0.055852436
+    "recovery_score": 60.0,
+    "hrv": 73.21211,
+    "resting_hr": 68.0,
+    "sleep_duration_hrs": 5.03,
+    "sleep_performance": 62.0,
+    "daily_strain": 0.12217207
   }
 ]
