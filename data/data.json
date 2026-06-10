@@ -352,11 +352,11 @@
   },
   {
     "date": "2026-06-09",
-    "recovery_score": 96.0,
-    "hrv": 86.364,
-    "resting_hr": 62.0,
-    "sleep_duration_hrs": 8.77,
-    "sleep_performance": 86.0,
-    "daily_strain": 5.511498
+    "recovery_score": 56.0,
+    "hrv": 53.555492,
+    "resting_hr": 71.0,
+    "sleep_duration_hrs": 8.23,
+    "sleep_performance": 88.0,
+    "daily_strain": 4.208204
   }
 ]
