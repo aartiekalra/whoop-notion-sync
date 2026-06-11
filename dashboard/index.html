@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Whoop Health Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+    <script src="vendor/chart.umd.min.js"></script>
     <style>
       :root {
         color-scheme: light;
@@ -407,10 +407,19 @@
         return addDaysIso(isoDateStr, -daysFromMonday);
       }
 
-      function average(rows, key) {
-        if (!rows.length) return 0;
-        const total = rows.reduce((sum, row) => sum + (Number(row[key]) || 0), 0);
-        return total / rows.length;
+      /** Average only days with a positive value (excludes missing wear / zero rows). */
+      function averagePositive(rows, key) {
+        const values = rows
+          .map((row) => Number(row[key]))
+          .filter((n) => Number.isFinite(n) && n > 0);
+        if (!values.length) return null;
+        return values.reduce((sum, n) => sum + n, 0) / values.length;
+      }
+
+      /** Chart points: null skips gaps instead of plotting 0 for no-wear days. */
+      function chartValue(value) {
+        const n = Number(value);
+        return Number.isFinite(n) && n > 0 ? n : null;
       }
 
       function fmt(value, digits = 1) {
@@ -429,13 +438,25 @@
 
       function renderWeekAvg(weekRows) {
         const root = document.getElementById("week-avg-wrap");
-        const avgRec = average(weekRows, "recovery_score");
-        const avgSleep = average(weekRows, "sleep_duration_hrs");
-        const avgStrain = average(weekRows, "daily_strain");
+        const avgRec = averagePositive(weekRows, "recovery_score");
+        const avgSleep = averagePositive(weekRows, "sleep_duration_hrs");
+        const avgStrain = averagePositive(weekRows, "daily_strain");
         const cards = [
-          { label: "recovery", value: `${fmt(avgRec, 0)}%`, color: recoveryCssVar(avgRec) },
-          { label: "sleep", value: `${fmt(avgSleep, 1)}h`, color: sleepCssVar(avgSleep) },
-          { label: "strain", value: fmt(avgStrain, 1), color: "" },
+          {
+            label: "recovery",
+            value: avgRec != null ? `${fmt(avgRec, 0)}%` : "—",
+            color: avgRec != null ? recoveryCssVar(avgRec) : "",
+          },
+          {
+            label: "sleep",
+            value: avgSleep != null ? `${fmt(avgSleep, 1)}h` : "—",
+            color: avgSleep != null ? sleepCssVar(avgSleep) : "",
+          },
+          {
+            label: "strain",
+            value: avgStrain != null ? fmt(avgStrain, 1) : "—",
+            color: "",
+          },
         ];
         root.innerHTML = `
           <div class="week-avg-heading">average</div>
@@ -529,8 +550,30 @@
         });
       }
 
+      function showInitError(err) {
+        console.error(err);
+        const detail = err instanceof Error ? err.message : String(err);
+        let message = "failed to load dashboard.";
+        if (/chart/i.test(detail)) {
+          message = "failed to load charts.";
+        } else if (/data\.json|fetch|network/i.test(detail)) {
+          message = "failed to load data.json.";
+        }
+        document.querySelector(".container").insertAdjacentHTML(
+          "beforeend",
+          `<p style="color:#e11d48;margin-top:14px;font-weight:700">${message}</p>`
+        );
+      }
+
       async function init() {
+        if (typeof Chart === "undefined") {
+          throw new Error("Chart.js failed to load");
+        }
+
         const res = await fetch(DATA_URL, { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error(`data.json returned ${res.status}`);
+        }
         const data = await res.json();
         const rows = Array.isArray(data) ? data : [];
         rows.sort((a, b) => String(a.date).localeCompare(String(b.date)));
@@ -548,7 +591,7 @@
 
         const last30 = rows.slice(-30);
         const labels = last30.map((r) => r.date);
-        const recoveryVals = last30.map((r) => Number(r.recovery_score) || 0);
+        const recoveryVals = last30.map((r) => chartValue(r.recovery_score));
 
         const recoveryCanvas = document.getElementById("recoveryChart");
         if (recoveryCanvas.__chart) recoveryCanvas.__chart.destroy();
@@ -559,13 +602,14 @@
             datasets: [
               {
                 data: recoveryVals,
+                spanGaps: false,
                 segment: {
                   borderColor: (ctx) => recoveryHex(ctx.p1.parsed.y ?? 0),
                 },
                 borderWidth: 2,
-                pointBackgroundColor: recoveryVals.map((v) => recoveryHex(v)),
+                pointBackgroundColor: recoveryVals.map((v) => (v != null ? recoveryHex(v) : "transparent")),
                 pointBorderColor: "#ffffff",
-                pointRadius: 4,
+                pointRadius: recoveryVals.map((v) => (v != null ? 4 : 0)),
                 tension: 0.25,
               },
             ],
@@ -588,7 +632,7 @@
           },
         });
 
-        const sleepVals = last30.map((r) => Number(r.sleep_duration_hrs) || 0);
+        const sleepVals = last30.map((r) => chartValue(r.sleep_duration_hrs));
         const sleepCanvas = document.getElementById("sleepChart");
         if (sleepCanvas.__chart) sleepCanvas.__chart.destroy();
         sleepCanvas.__chart = new Chart(sleepCanvas, {
@@ -598,13 +642,14 @@
             datasets: [
               {
                 data: sleepVals,
+                spanGaps: false,
                 segment: {
                   borderColor: (ctx) => sleepHex(ctx.p1.parsed.y ?? 0),
                 },
                 borderWidth: 2,
-                pointBackgroundColor: sleepVals.map((v) => sleepHex(v)),
+                pointBackgroundColor: sleepVals.map((v) => (v != null ? sleepHex(v) : "transparent")),
                 pointBorderColor: "#ffffff",
-                pointRadius: 4,
+                pointRadius: sleepVals.map((v) => (v != null ? 4 : 0)),
                 tension: 0.25,
               },
             ],
@@ -626,27 +671,24 @@
           },
         });
 
+        const strainVals = last30.map((r) => chartValue(r.daily_strain));
         makeChart(
           "strainChart",
           labels,
-          last30.map((r) => Number(r.daily_strain) || 0),
+          strainVals,
           {
+            spanGaps: false,
             borderColor: "#fb923c",
             backgroundColor: "#fb923c",
-            pointBackgroundColor: "#fb923c",
+            pointBackgroundColor: strainVals.map((v) => (v != null ? "#fb923c" : "transparent")),
+            pointRadius: strainVals.map((v) => (v != null ? 3 : 0)),
           },
           {},
           cs
         );
       }
 
-      init().catch((err) => {
-        console.error(err);
-        document.querySelector(".container").insertAdjacentHTML(
-          "beforeend",
-          '<p style="color:#e11d48;margin-top:14px;font-weight:700">failed to load dashboard data.</p>'
-        );
-      });
+      init().catch(showInitError);
     </script>
   </body>
 </html>
