@@ -37,7 +37,14 @@ class WhoopClient:
 
         if response.status_code >= 400:
             detail = response.text.strip()
-            raise RuntimeError(f"Whoop token refresh failed ({response.status_code}): {detail}")
+            hint = ""
+            if "invalid_grant" in detail:
+                hint = (
+                    " The stored WHOOP_REFRESH_TOKEN is stale or revoked. Re-run "
+                    "scripts/get_token.py, update the GitHub secret, and ensure GH_REPO_PAT "
+                    "can write repository secrets so token rotation persists between runs."
+                )
+            raise RuntimeError(f"Whoop token refresh failed ({response.status_code}): {detail}.{hint}")
 
         payload = response.json()
         token = payload.get("access_token")

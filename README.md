@@ -57,6 +57,13 @@ Add one more secret:
 
 - `GH_REPO_PAT` — a [fine-grained personal access token](https://github.com/settings/tokens?type=beta) with access to this repo only. Under **Repository permissions**, set **Secrets** to **Read and write** (this covers `PUT .../actions/secrets/...`). The default `GITHUB_TOKEN` cannot change repository secrets. A **classic** PAT with the `repo` scope also works.
 
+If auth breaks (for example `invalid_grant` or a failed secret write after token rotation), the workflow run shows a **Whoop auth failed** annotation and job summary with recovery steps. To fix manually:
+
+1. Run `python scripts/get_token.py` locally
+2. Update the `WHOOP_REFRESH_TOKEN` repository secret
+3. Confirm `GH_REPO_PAT` is still valid and has Secrets write access
+4. Re-run the workflow from the Actions tab
+
 ## Notion workout schema
 
 Expected properties in your Notion database:
