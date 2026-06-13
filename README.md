@@ -51,7 +51,7 @@ Set these as GitHub Actions secrets and locally for manual runs:
 
 ### GitHub Actions only (WHOOP refresh rotation)
 
-WHOOP returns a **new** refresh token whenever you refresh an access token. The sync job updates the `WHOOP_REFRESH_TOKEN` repository secret automatically using the GitHub CLI, so cron runs keep working.
+WHOOP returns a **new** refresh token whenever you refresh an access token. The sync job updates the `WHOOP_REFRESH_TOKEN` repository secret automatically via the GitHub API, so cron runs keep working.
 
 Add one more secret:
 

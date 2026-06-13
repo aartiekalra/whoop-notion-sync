@@ -24,21 +24,13 @@ class WhoopClient:
             "refresh_token": self.refresh_token,
             "client_id": self.client_id,
             "client_secret": self.client_secret,
-            "scope": "offline",
         }
         response = requests.post(WHOOP_TOKEN_URL, data=payload, timeout=30)
-
-        # Some WHOOP app configs reject scope on refresh; retry once without it.
-        if response.status_code >= 400:
-            retry_payload = {k: v for k, v in payload.items() if k != "scope"}
-            retry = requests.post(WHOOP_TOKEN_URL, data=retry_payload, timeout=30)
-            if retry.ok:
-                response = retry
 
         if response.status_code >= 400:
             detail = response.text.strip()
             hint = ""
-            if "invalid_grant" in detail:
+            if "invalid_grant" in detail or "invalid_request" in detail:
                 hint = (
                     " The stored WHOOP_REFRESH_TOKEN is stale or revoked. Re-run "
                     "scripts/get_token.py, update the GitHub secret, and ensure GH_REPO_PAT "

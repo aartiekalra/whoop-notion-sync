@@ -1,7 +1,11 @@
+import base64
 import os
-import subprocess
-import tempfile
 import time
+
+import requests
+from nacl import public
+
+GITHUB_API = "https://api.github.com"
 
 
 def _running_in_github_actions() -> bool:
@@ -25,51 +29,69 @@ def update_whoop_refresh_token_secret_if_configured(refresh_token: str) -> None:
             )
         return
 
-    last_error: subprocess.CalledProcessError | None = None
+    owner, name = repo.split("/", 1)
+    headers = {
+        "Authorization": f"Bearer {pat}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+
+    last_error: str | None = None
     for attempt in range(3):
         try:
-            _gh_secret_set(repo, pat, refresh_token)
+            _put_repo_secret(headers, owner, name, "WHOOP_REFRESH_TOKEN", refresh_token)
             return
-        except subprocess.CalledProcessError as exc:
-            last_error = exc
+        except RuntimeError as exc:
+            last_error = str(exc)
             if attempt < 2:
                 time.sleep(2**attempt)
 
-    detail = ""
-    if last_error and last_error.stderr:
-        detail = last_error.stderr.decode("utf-8", errors="replace").strip()
     raise RuntimeError(
         "Failed to persist WHOOP_REFRESH_TOKEN to GitHub secrets after WHOOP token refresh. "
         "WHOOP has already invalidated the previous refresh token, so you must re-authorize "
         "(python scripts/get_token.py) and update the WHOOP_REFRESH_TOKEN secret. "
-        f"GH_REPO_PAT may be expired or lack Secrets write permission. {detail}".strip()
-    ) from last_error
+        "GH_REPO_PAT may be expired or lack Secrets write permission. "
+        f"{last_error or ''}".strip()
+    )
 
 
-def _gh_secret_set(repo: str, pat: str, refresh_token: str) -> None:
-    with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False, suffix=".txt") as f:
-        f.write(refresh_token)
-        path = f.name
-
-    try:
-        subprocess.run(
-            [
-                "gh",
-                "secret",
-                "set",
-                "WHOOP_REFRESH_TOKEN",
-                "--repo",
-                repo,
-                "--body-file",
-                path,
-            ],
-            env={**os.environ, "GH_TOKEN": pat},
-            check=True,
-            capture_output=True,
-            timeout=120,
+def _put_repo_secret(
+    headers: dict[str, str],
+    owner: str,
+    repo: str,
+    secret_name: str,
+    secret_value: str,
+) -> None:
+    key_url = f"{GITHUB_API}/repos/{owner}/{repo}/actions/secrets/public-key"
+    key_response = requests.get(key_url, headers=headers, timeout=30)
+    if key_response.status_code >= 400:
+        raise RuntimeError(
+            f"Could not fetch GitHub Actions public key ({key_response.status_code}): "
+            f"{key_response.text.strip()}"
         )
-    finally:
-        try:
-            os.unlink(path)
-        except OSError:
-            pass
+
+    key_data = key_response.json()
+    key_id = key_data.get("key_id")
+    public_key = key_data.get("key")
+    if not key_id or not public_key:
+        raise RuntimeError("GitHub Actions public key response was missing key_id or key")
+
+    encrypted = _encrypt_secret(public_key, secret_value)
+    put_url = f"{GITHUB_API}/repos/{owner}/{repo}/actions/secrets/{secret_name}"
+    put_response = requests.put(
+        put_url,
+        headers=headers,
+        json={"encrypted_value": encrypted, "key_id": key_id},
+        timeout=30,
+    )
+    if put_response.status_code >= 400:
+        raise RuntimeError(
+            f"Could not update {secret_name} ({put_response.status_code}): {put_response.text.strip()}"
+        )
+
+
+def _encrypt_secret(public_key: str, secret_value: str) -> str:
+    public_key_bytes = base64.b64decode(public_key)
+    sealed_box = public.SealedBox(public.PublicKey(public_key_bytes))
+    encrypted = sealed_box.encrypt(secret_value.encode("utf-8"))
+    return base64.b64encode(encrypted).decode("utf-8")

@@ -25,9 +25,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Verify GH CLI
-        run: gh --version
-
       - name: Run sync
         id: sync
         run: python src/main.py
