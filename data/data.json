@@ -721,11 +721,11 @@
   },
   {
     "date": "2026-07-20",
-    "recovery_score": 58.0,
-    "hrv": 60.95556,
-    "resting_hr": 68.0,
-    "sleep_duration_hrs": 6.29,
-    "sleep_performance": 73.0,
-    "daily_strain": 5.4610023
+    "recovery_score": 88.0,
+    "hrv": 73.58988,
+    "resting_hr": 66.0,
+    "sleep_duration_hrs": 9.32,
+    "sleep_performance": 78.0,
+    "daily_strain": 5.670119
   }
 ]
