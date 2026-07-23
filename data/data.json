@@ -740,10 +740,10 @@
   {
     "date": "2026-07-22",
     "recovery_score": 98.0,
-    "hrv": 93.2289,
+    "hrv": 96.18381,
     "resting_hr": 61.0,
-    "sleep_duration_hrs": 7.93,
-    "sleep_performance": 86.0,
-    "daily_strain": 4.008645
+    "sleep_duration_hrs": 9.08,
+    "sleep_performance": 91.0,
+    "daily_strain": 5.6295066
   }
 ]
