@@ -919,11 +919,11 @@
   },
   {
     "date": "2026-08-11",
-    "recovery_score": 37.0,
-    "hrv": 51.802494,
-    "resting_hr": 75.0,
-    "sleep_duration_hrs": 5.87,
-    "sleep_performance": 68.0,
-    "daily_strain": 14.804284
+    "recovery_score": 52.0,
+    "hrv": 61.01701,
+    "resting_hr": 70.0,
+    "sleep_duration_hrs": 7.81,
+    "sleep_performance": 83.0,
+    "daily_strain": 0.12992772
   }
 ]
