@@ -928,11 +928,11 @@
   },
   {
     "date": "2026-08-12",
-    "recovery_score": 52.0,
-    "hrv": 61.01701,
+    "recovery_score": 51.0,
+    "hrv": 62.476955,
     "resting_hr": 70.0,
-    "sleep_duration_hrs": 7.81,
-    "sleep_performance": 83.0,
-    "daily_strain": 14.762036
+    "sleep_duration_hrs": 6.28,
+    "sleep_performance": 80.0,
+    "daily_strain": 4.3001704
   }
 ]
