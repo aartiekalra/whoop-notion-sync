@@ -973,11 +973,11 @@
   },
   {
     "date": "2026-08-17",
-    "recovery_score": 39.0,
-    "hrv": 47.56219,
-    "resting_hr": 72.0,
-    "sleep_duration_hrs": 8.42,
+    "recovery_score": 44.0,
+    "hrv": 49.86326,
+    "resting_hr": 69.0,
+    "sleep_duration_hrs": 6.48,
     "sleep_performance": 78.0,
-    "daily_strain": 11.968882
+    "daily_strain": 6.0963244
   }
 ]
