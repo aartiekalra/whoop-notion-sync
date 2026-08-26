@@ -1045,11 +1045,11 @@
   },
   {
     "date": "2026-08-25",
-    "recovery_score": 94.0,
-    "hrv": 81.10111,
-    "resting_hr": 61.0,
-    "sleep_duration_hrs": 6.8,
-    "sleep_performance": 81.0,
-    "daily_strain": 13.799547
+    "recovery_score": 91.0,
+    "hrv": 76.60872,
+    "resting_hr": 62.0,
+    "sleep_duration_hrs": 7.59,
+    "sleep_performance": 80.0,
+    "daily_strain": 0.2243041
   }
 ]
