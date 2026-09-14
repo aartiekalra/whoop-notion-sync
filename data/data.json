@@ -1216,11 +1216,11 @@
   },
   {
     "date": "2026-09-13",
-    "recovery_score": 24.0,
-    "hrv": 29.735937,
-    "resting_hr": 84.0,
-    "sleep_duration_hrs": 4.97,
-    "sleep_performance": 32.0,
-    "daily_strain": 7.5207205
+    "recovery_score": 72.0,
+    "hrv": 62.005005,
+    "resting_hr": 71.0,
+    "sleep_duration_hrs": 8.84,
+    "sleep_performance": 75.0,
+    "daily_strain": 13.7855215
   }
 ]
