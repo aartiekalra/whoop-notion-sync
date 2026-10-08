@@ -1432,11 +1432,11 @@
   },
   {
     "date": "2026-10-07",
-    "recovery_score": 60.0,
-    "hrv": 57.653465,
-    "resting_hr": 66.0,
-    "sleep_duration_hrs": 6.68,
-    "sleep_performance": 82.0,
-    "daily_strain": 14.4953165
+    "recovery_score": 74.0,
+    "hrv": 66.71912,
+    "resting_hr": 65.0,
+    "sleep_duration_hrs": 7.47,
+    "sleep_performance": 85.0,
+    "daily_strain": 5.2161098
   }
 ]
