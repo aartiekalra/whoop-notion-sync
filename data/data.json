@@ -1531,11 +1531,11 @@
   },
   {
     "date": "2026-10-18",
-    "recovery_score": 26.0,
-    "hrv": 38.678318,
-    "resting_hr": 76.0,
-    "sleep_duration_hrs": 7.59,
-    "sleep_performance": 68.0,
-    "daily_strain": 8.620758
+    "recovery_score": 41.0,
+    "hrv": 48.861877,
+    "resting_hr": 73.0,
+    "sleep_duration_hrs": 7.77,
+    "sleep_performance": 75.0,
+    "daily_strain": 5.3563805
   }
 ]
