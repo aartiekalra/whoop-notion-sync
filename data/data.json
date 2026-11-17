@@ -1792,11 +1792,11 @@
   },
   {
     "date": "2026-11-16",
-    "recovery_score": 86.0,
-    "hrv": 73.764725,
-    "resting_hr": 64.0,
-    "sleep_duration_hrs": 7.89,
-    "sleep_performance": 78.0,
-    "daily_strain": 5.9906044
+    "recovery_score": 64.0,
+    "hrv": 58.753708,
+    "resting_hr": 67.0,
+    "sleep_duration_hrs": 6.64,
+    "sleep_performance": 77.0,
+    "daily_strain": 13.302879
   }
 ]
