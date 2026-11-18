@@ -1801,11 +1801,11 @@
   },
   {
     "date": "2026-11-17",
-    "recovery_score": 64.0,
-    "hrv": 58.753708,
-    "resting_hr": 67.0,
-    "sleep_duration_hrs": 6.64,
-    "sleep_performance": 77.0,
-    "daily_strain": 14.288226
+    "recovery_score": 76.0,
+    "hrv": 66.992714,
+    "resting_hr": 65.0,
+    "sleep_duration_hrs": 7.72,
+    "sleep_performance": 81.0,
+    "daily_strain": 13.461035
   }
 ]
